@@ -75,7 +75,7 @@ def credit(self,accnt_no,name,amt):
 	cb=cb+amt
 	ff=open(str(accnt_no)+"-rec.txt",'a+')
 	ff.write(str(strftime("%y-%m-%d %h:%m:%s",gmtime()))+"\t"+str(amt)+"\t    \t"+str(cb)+"\n")
-
+	ff.close()
 	self.update(cb,name,accnt_no)
 	return
 def transact_history(self,accnt_no):

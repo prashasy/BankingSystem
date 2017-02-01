@@ -1,3 +1,3 @@
-My first Banking system code from start
-has backend and a GUI using python.
-Suggestions Welcome.
+My Banking System code using Python 3.6.
+It has a GUI using tkinter and file-handling as back-end.
+Suggestions are welcome!!

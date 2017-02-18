@@ -10,9 +10,22 @@ def is_number(s):
     except ValueError:
         return 0
 
+def check_acc_nmb(num):
+	try:
+		fpin=open(num+".txt",'r')
+	except FileNotFoundError:
+		messagebox.showinfo("Error","Invalid Credentials!\nTry Again!")
+		return 0
+	fpin.close()
+	return 
+
+def home_return(master):
+	master.destroy()
+	Main_Menu()
+
 def write(master,name,oc,pin):
 	
-	if( (is_number(name)) or (is_number(oc)==0) or (is_number(pin)==0)):
+	if( (is_number(name)) or (is_number(oc)==0) or (is_number(pin)==0)or name==""):
 		messagebox.showinfo("Error","Invalid Credentials\nPlease try again.")
 		master.destroy()
 		return 
@@ -97,44 +110,46 @@ def debit_write(master,amt,accnt,name):
 		master.destroy()
 		return
 
-def Cr_Amt(a,name):
+def Cr_Amt(accnt,name):
 	creditwn=tk.Tk()
 	creditwn.geometry("600x300")
 	creditwn.title("Credit Amount")
 	creditwn.configure(bg="orange")
 	fr1=tk.Frame(creditwn,bg="blue")
-	l_title=tk.Message(crditwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
+	l_title=tk.Message(creditwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
 	l_title.config(font=("Courier","50","bold"))
 	l_title.pack(side="top")
 	l1=tk.Label(creditwn,relief="raised",text="Enter Amount to be credited: ")
 	e1=tk.Entry(creditwn,relief="raised")
 	l1.pack(side="top")
 	e1.pack(side="top")
-	b=tk.Button(creditwn,text="Credit",relief="raised",command=lambda:crdt_write(creditwn,e1.get(),a,name))
+	b=tk.Button(creditwn,text="Credit",relief="raised",command=lambda:crdt_write(creditwn,e1.get(),accnt,name))
 	b.pack(side="top")
+	creditwn.bind("<Return>",lambda x:crdt_write(creditwn,e1.get(),accnt,name))
 
 
-def De_Amt(a,name):
-	creditwn=tk.Tk()
-	creditwn.geometry("600x300")
-	creditwn.title("Debit Amount")	
-	creditwn.configure(bg="orange")
-	fr1=tk.Frame(creditwn,bg="blue")
-	l_title=tk.Message(crditwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
+def De_Amt(accnt,name):
+	debitwn=tk.Tk()
+	debitwn.geometry("600x300")
+	debitwn.title("Debit Amount")	
+	debitwn.configure(bg="orange")
+	fr1=tk.Frame(debitwn,bg="blue")
+	l_title=tk.Message(debitwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
 	l_title.config(font=("Courier","50","bold"))
-	l_title.pack(side="top")	
-	l1=tk.Label(creditwn,relief="raised",text="Enter Amount to be debited: ")
-	e1=tk.Entry(creditwn,relief="raised")
+	l_title.pack(side="top")
+	l1=tk.Label(debitwn,relief="raised",text="Enter Amount to be debited: ")
+	e1=tk.Entry(debitwn,relief="raised")
 	l1.pack(side="top")
 	e1.pack(side="top")
-	b=tk.Button(creditwn,text="Debit",relief="raised",command=lambda:debit_write(creditwn,e1.get(),a,name))
+	b=tk.Button(debitwn,text="Debit",relief="raised",command=lambda:debit_write(debitwn,e1.get(),accnt,name))
 	b.pack(side="top")
+	debitwn.bind("<Return>",lambda x:debit_write(creditwn,e1.get(),accnt,name))
 
 
 
 
-def disp_bal(a):
-	fdet=open(a+".txt",'r')
+def disp_bal(accnt):
+	fdet=open(accnt+".txt",'r')
 	fdet.readline()
 	bal=fdet.readline()
 	fdet.close()
@@ -143,24 +158,22 @@ def disp_bal(a):
 
 
 
-def disp_tr_hist(a):
+def disp_tr_hist(accnt):
 	disp_wn=tk.Tk()
 	disp_wn.geometry("900x600")
 	disp_wn.title("Transaction History")
 	disp_wn.configure(bg="orange")
 	fr1=tk.Frame(disp_wn,bg="blue")
-	fr1=tk.Frame(disp_wn)
-	fr1.pack(side="top")
 	l_title=tk.Message(disp_wn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
 	l_title.config(font=("Courier","50","bold"))
 	l_title.pack(side="top")
-
-
+	fr1=tk.Frame(disp_wn)
+	fr1.pack(side="top")
 	l1=tk.Message(disp_wn,text="Your Transaction History:",padx=100,pady=20,width=1000,bg="blue",fg="orange",relief="raised")
 	l1.pack(side="top")
 	fr2=tk.Frame(disp_wn)
 	fr2.pack(side="top")
-	frec=open(a+"-rec.txt",'r')
+	frec=open(accnt+"-rec.txt",'r')
 	for line in frec:
 		l=tk.Message(disp_wn,anchor="w",text=line,relief="raised",width=2000)
 		l.pack(side="top")
@@ -168,223 +181,18 @@ def disp_tr_hist(a):
 	b.pack(side="top")
 	frec.close()
 
-def tr_hist(master,a,b,c):
-	try:
-		fpin=open(a+".txt",'r')
-		st=fpin.readline()
-		fpin.readline()
-		fpin.readline()
-		name=fpin.readline()
-		fpin.close()
-		if(st==(b+"\n") and (c+"\n")==name):  
-			master.destroy()
-			disp_tr_hist(a)
-			
-		else:
-			messagebox.showinfo("Error","Invalid Credentials\nPlease try again.")
-			master.destroy()
-			return 
-	except FileNotFoundError:
-		messagebox.showinfo("Error","Invalid Credentials!\nTry Again!")
-
-def check_bal(master,a,b,c):
-	try:
-		fpin=open(a+".txt",'r')
-		st=fpin.readline()
-		fpin.readline()
-		fpin.readline()
-		name=fpin.readline()
-		fpin.close()
-		if(st==(b+"\n") and (c.lower()+"\n")==name.lower()): 
-			master.destroy()
-			disp_bal(a)
-			
-		else:
-			messagebox.showinfo("Error","Invalid Credentials\nPlease try again.")
-			master.destroy()
-			return 
-	except FileNotFoundError:
-		messagebox.showinfo("Error","Invalid Credentials!\nTry Again!")
-
-def check_debit(master,a,b,c):
-	try:
-		fpin=open(a+".txt",'r')
-		st=fpin.readline()
-		fpin.readline()
-		fpin.readline()
-		name=fpin.readline()
-		fpin.close()
-		if((st==(b+"\n")) and ((c.lower()+"\n")==name.lower())): 
-			master.destroy()
-			De_Amt(a,c)
-			
-		else:
-			messagebox.showinfo("Error","Invalid Credentials\nPlease try again.")
-			master.destroy()
-			return
-	except FileNotFoundError:
-		messagebox.showinfo("Error","Invalid Credentials!\nTry Again!")		 
-
-def check_credit(master,a,b,c):
-	try:
-		fpin=open(a+".txt",'r')
-		st=fpin.readline()
-		fpin.readline()
-		fpin.readline()
-		name=fpin.readline()
-		fpin.close()
-		if(st==(b+"\n") and (c.lower()+"\n")==name.lower()):  
-			master.destroy()
-			Cr_Amt(a,c)
-			
-		else:
-			messagebox.showinfo("Error","Invalid Credentials\nPlease try again.")
-			master.destroy()
-			return 
-	except FileNotFoundError:
-		messagebox.showinfo("Error","Invalid Credentials!\nTry Again!")
-def Main_Menu():
-	
-	def Create():
-		
-		crwn=tk.Tk()
-		crwn.geometry("600x300")
-		crwn.title("Create Account")
-		crwn.configure(bg="orange")
-		fr1=tk.Frame(crwn,bg="blue")
-
-		l_title=tk.Message(crwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
-		l_title.config(font=("Courier","50","bold"))
-		l_title.pack(side="top")
-
-		l1=tk.Label(crwn,text="Enter Name:",relief="raised")
-		l1.pack(side="top")
-		e1=tk.Entry(crwn)
-		e1.pack(side="top")
-		l2=tk.Label(crwn,text="Enter opening credit:",relief="raised")
-		l2.pack(side="top")
-		e2=tk.Entry(crwn)
-		e2.pack(side="top")
-		l3=tk.Label(crwn,text="Enter desired PIN:",relief="raised")
-		l3.pack(side="top")
-		e3=tk.Entry(crwn,show="*")
-		e3.pack(side="top")
-		b=tk.Button(crwn,text="Submit",command=lambda: write(crwn,e1.get().strip(),e2.get().strip(),e3.get().strip()))
-		b.pack(side="top")
-		return
-	def Credit():
-		crdtwn=tk.Tk()
-		crdtwn.geometry("600x300")
-		crdtwn.title("Credit")
-		crdtwn.configure(bg="orange")
-		fr1=tk.Frame(crdtwn,bg="blue")
-		l_title=tk.Message(crdtwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
-		l_title.config(font=("Courier","50","bold"))
-		l_title.pack(side="top")
-		l1=tk.Label(crdtwn,text="Enter Name: ",relief="raised")
-		l2=tk.Label(crdtwn,text="Enter Account Number: ",relief="raised")
-		l3=tk.Label(crdtwn,text="Enter PIN: ",relief="raised")
-		e1=tk.Entry(crdtwn)
-		e2=tk.Entry(crdtwn)
-		e3=tk.Entry(crdtwn,show="*")
-		l1.pack(side="top")
-		e1.pack(side="top")
-		l2.pack(side="top")
-		e2.pack(side="top")
-		l3.pack(side="top")
-		e3.pack(side="top")
-		b=tk.Button(crdtwn,text="Submit:",relief="raised",command=lambda: check_credit(crdtwn,e2.get().strip(),e3.get().strip(),e1.get().strip()))
-		b.pack(side="top")
-	def Debit():
-		crdtwn=tk.Tk()
-		crdtwn.geometry("600x300")
-		crdtwn.title("Debit")
-		crdtwn.configure(bg="orange")
-		fr1=tk.Frame(crdtwn,bg="blue")
-		l_title=tk.Message(crdtwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
-		l_title.config(font=("Courier","50","bold"))
-		l_title.pack(side="top")
-		l1=tk.Label(crdtwn,text="Enter Name: ",relief="raised")
-		l2=tk.Label(crdtwn,text="Enter Account Number: ",relief="raised")
-		l3=tk.Label(crdtwn,text="Enter PIN: ",relief="raised")
-		e1=tk.Entry(crdtwn)
-		e2=tk.Entry(crdtwn)
-		e3=tk.Entry(crdtwn,show="*")
-		l1.pack(side="top")
-		e1.pack(side="top")
-		l2.pack(side="top")
-		e2.pack(side="top")
-		l3.pack(side="top")
-		e3.pack(side="top")
-		b=tk.Button(crdtwn,text="Submit:",relief="raised",command=lambda: check_debit(crdtwn,e2.get().strip(),e3.get().strip(),e1.get().strip()))
-		b.pack(side="top")
-	def check_balance():
-		crdtwn=tk.Tk()
-		crdtwn.geometry("600x300")
-		crdtwn.title("Balance Check")
-		crdtwn.configure(bg="orange")
-		fr1=tk.Frame(crdtwn,bg="blue")
-		l_title=tk.Message(crdtwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
-		l_title.config(font=("Courier","50","bold"))
-		l_title.pack(side="top")
-		l1=tk.Label(crdtwn,text="Enter Name: ",relief="raised")
-		l2=tk.Label(crdtwn,text="Enter Account Number: ",relief="raised")
-		l3=tk.Label(crdtwn,text="Enter PIN: ",relief="raised")
-		e1=tk.Entry(crdtwn)
-		e2=tk.Entry(crdtwn)
-		e3=tk.Entry(crdtwn,show="*")
-		l1.pack(side="top")
-		e1.pack(side="top")
-		l2.pack(side="top")
-		e2.pack(side="top")
-		l3.pack(side="top")
-		e3.pack(side="top")
-		b=tk.Button(crdtwn,text="Submit:",relief="raised",command=lambda: check_bal(crdtwn,e2.get().strip(),e3.get().strip(),e1.get().strip()))
-		b.pack(side="top")
-
-
-	def transac_hist():
-		crdtwn=tk.Tk()
-		crdtwn.geometry("600x300")
-		crdtwn.title("Transaction History")
-		crdtwn.configure(bg="orange")
-		fr1=tk.Frame(crdtwn,bg="blue")
-		l_title=tk.Message(crdtwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
-		l_title.config(font=("Courier","50","bold"))
-		l_title.pack(side="top")
-
-		l1=tk.Label(crdtwn,text="Enter Name: ",relief="raised")
-		l2=tk.Label(crdtwn,text="Enter Account Number: ",relief="raised")
-		l3=tk.Label(crdtwn,text="Enter PIN: ",relief="raised")
-		e1=tk.Entry(crdtwn)
-		e2=tk.Entry(crdtwn)
-		e3=tk.Entry(crdtwn,show="*")
-		l1.pack(side="top")
-		e1.pack(side="top")
-		l2.pack(side="top")
-		e2.pack(side="top")
-		l3.pack(side="top")
-		e3.pack(side="top")
-		b=tk.Button(crdtwn,text="Submit:",relief="raised",command=lambda: tr_hist(crdtwn,e2.get().strip(),e3.get().strip(),e1.get().strip()))
-		b.pack(side="top")	
-
+def logged_in_menu(accnt,name):
 	rootwn=tk.Tk()
 	rootwn.geometry("1600x500")
-	rootwn.title("Apna Bank")
+	rootwn.title("JUIT BANK-"+name)
 	rootwn.configure(background='orange')
 	fr1=tk.Frame(rootwn)
 	fr1.pack(side="top")
-	bg_image = tk.PhotoImage(file ="pile1.gif")
-	x = tk.Label (image = bg_image)
-	x.place(y=-400)
-
-	l_title=tk.Message(text="WELCOME TO\nJUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
+	l_title=tk.Message(rootwn,text="WELCOME TO\nJUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
 	l_title.config(font=("Courier","50","bold"))
 	l_title.pack(side="top")
-
-
-	img1=tk.PhotoImage(file="new.gif")
-	myimg1=img1.subsample(2,2)
+	label=tk.Label(text="Logged in as: "+name,relief="raised",bg="black",fg="white",anchor="center",justify="center")
+	label.pack(side="top")
 	img2=tk.PhotoImage(file="credit.gif")
 	myimg2=img2.subsample(2,2)
 	img3=tk.PhotoImage(file="debit.gif")
@@ -393,32 +201,139 @@ def Main_Menu():
 	myimg4=img4.subsample(2,2)
 	img5=tk.PhotoImage(file="transaction.gif")
 	myimg5=img5.subsample(2,2)
-
-	b1=tk.Button(image=myimg1,command=Create)
-	b1.image=myimg1
-	b2=tk.Button(image=myimg2,command=Credit)
+	b2=tk.Button(image=myimg2,command=lambda: Cr_Amt(accnt,name))
 	b2.image=myimg2
-	b3=tk.Button(image=myimg3,command=Debit)
+	b3=tk.Button(image=myimg3,command=lambda: De_Amt(accnt,name))
 	b3.image=myimg3
-	b4=tk.Button(image=myimg4,command=check_balance)
+	b4=tk.Button(image=myimg4,command=lambda: disp_bal(accnt))
 	b4.image=myimg4
-	b5=tk.Button(image=myimg5,command=transac_hist)
+	b5=tk.Button(image=myimg5,command=lambda: disp_tr_hist(accnt))
 	b5.image=myimg5
 	
+	img6=tk.PhotoImage(file="logout.gif")
+	myimg6=img6.subsample(2,2)
+	b6=tk.Button(image=myimg6,relief="raised",command=lambda: logout(rootwn))
+	b6.image=myimg6
+
+	
+	b2.place(x=100,y=150)
+	b3.place(x=100,y=220)
+	b4.place(x=900,y=150)
+	b5.place(x=900,y=220)
+	b6.place(x=500,y=400)
+
+	
+def logout(master):
+	
+	messagebox.showinfo("Logged Out","You Have Been Successfully Logged Out!!")
+	master.destroy()
+	Main_Menu()
+
+def check_log_in(master,name,acc_num,pin):
+	if(check_acc_nmb(acc_num)==0):
+		master.destroy()
+		Main_Menu()
+		return
+
+	if( (is_number(name))  or (is_number(pin)==0) ):
+		messagebox.showinfo("Error","Invalid Credentials\nPlease try again.")
+		master.destroy()
+		Main_Menu()
+	else:
+		master.destroy()
+		logged_in_menu(acc_num,name)
+
+
+def log_in(master):
+	master.destroy()
+	loginwn=tk.Tk()
+	loginwn.geometry("600x300")
+	loginwn.title("Log in")
+	loginwn.configure(bg="orange")
+	fr1=tk.Frame(loginwn,bg="blue")
+	l_title=tk.Message(loginwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
+	l_title.config(font=("Courier","50","bold"))
+	l_title.pack(side="top")
+	l1=tk.Label(loginwn,text="Enter Name:",relief="raised")
+	l1.pack(side="top")
+	e1=tk.Entry(loginwn)
+	e1.pack(side="top")
+	l2=tk.Label(loginwn,text="Enter account number:",relief="raised")
+	l2.pack(side="top")
+	e2=tk.Entry(loginwn)
+	e2.pack(side="top")
+	l3=tk.Label(loginwn,text="Enter your PIN:",relief="raised")
+	l3.pack(side="top")
+	e3=tk.Entry(loginwn,show="*")
+	e3.pack(side="top")
+	b=tk.Button(loginwn,text="Submit",command=lambda: check_log_in(loginwn,e1.get().strip(),e2.get().strip(),e3.get().strip()))
+	b.pack(side="top")
+	b1=tk.Button(text="HOME",relief="raised",bg="black",fg="white",command=lambda: home_return(loginwn))
+	b1.pack(side="top")
+	loginwn.bind("<Return>",lambda x:check_log_in(loginwn,e1.get().strip(),e2.get().strip(),e3.get().strip()))
+	
+
+def Create():
+	
+	crwn=tk.Tk()
+	crwn.geometry("600x300")
+	crwn.title("Create Account")
+	crwn.configure(bg="orange")
+	fr1=tk.Frame(crwn,bg="blue")
+	l_title=tk.Message(crwn,text="JUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
+	l_title.config(font=("Courier","50","bold"))
+	l_title.pack(side="top")
+	l1=tk.Label(crwn,text="Enter Name:",relief="raised")
+	l1.pack(side="top")
+	e1=tk.Entry(crwn)
+	e1.pack(side="top")
+	l2=tk.Label(crwn,text="Enter opening credit:",relief="raised")
+	l2.pack(side="top")
+	e2=tk.Entry(crwn)
+	e2.pack(side="top")
+	l3=tk.Label(crwn,text="Enter desired PIN:",relief="raised")
+	l3.pack(side="top")
+	e3=tk.Entry(crwn,show="*")
+	e3.pack(side="top")
+	b=tk.Button(crwn,text="Submit",command=lambda: write(crwn,e1.get().strip(),e2.get().strip(),e3.get().strip()))
+	b.pack(side="top")
+	crwn.bind("<Return>",lambda x:write(crwn,e1.get().strip(),e2.get().strip(),e3.get().strip()))
+	return
+
+
+def Main_Menu():
+	
+
+	rootwn=tk.Tk()
+	rootwn.geometry("1600x500")
+	rootwn.title("JUIT Bank")
+	rootwn.configure(background='orange')
+	fr1=tk.Frame(rootwn)
+	fr1.pack(side="top")
+	bg_image = tk.PhotoImage(file ="pile1.gif")
+	x = tk.Label (image = bg_image)
+	x.place(y=-400)
+	l_title=tk.Message(text="WELCOME TO\nJUIT BANK",relief="raised",width=2000,padx=600,pady=0,fg="white",bg="black",justify="center",anchor="center")
+	l_title.config(font=("Courier","50","bold"))
+	l_title.pack(side="top")
+	imgc1=tk.PhotoImage(file="new.gif")
+	imglo=tk.PhotoImage(file="login.gif")
+	imgc=imgc1.subsample(2,2)
+	imglog=imglo.subsample(2,2)
+
+	b1=tk.Button(image=imgc,command=Create)
+	b1.image=imgc
+	b2=tk.Button(image=imglog,command=lambda: log_in(rootwn))
+	b2.image=imglog
 	img6=tk.PhotoImage(file="quit.gif")
 	myimg6=img6.subsample(2,2)
 
-	b6=tk.Button(image=myimg6,relief="raised",command=rootwn.destroy)
-
-	b1.place(x=10,y=200)
-	b2.place(x=10,y=270)
-	b3.place(x=900,y=200)
-	b4.place(x=900,y=270)
-	b5.place(x=900,y=340)
-	b6.place(x=500,y=400)
+	b6=tk.Button(image=myimg6,command=rootwn.destroy)
+	b6.image=myimg6
+	b1.place(x=800,y=300)
+	b2.place(x=800,y=200)	
+	b6.place(x=920,y=400)
 
 	rootwn.mainloop()
-
-
 
 Main_Menu()

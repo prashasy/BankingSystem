@@ -143,7 +143,7 @@ def De_Amt(accnt,name):
 	e1.pack(side="top")
 	b=tk.Button(debitwn,text="Debit",relief="raised",command=lambda:debit_write(debitwn,e1.get(),accnt,name))
 	b.pack(side="top")
-	debitwn.bind("<Return>",lambda x:debit_write(creditwn,e1.get(),accnt,name))
+	debitwn.bind("<Return>",lambda x:debit_write(debitwn,e1.get(),accnt,name))
 
 
 
